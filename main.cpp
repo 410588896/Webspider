@@ -1,11 +1,19 @@
 #include "Queue.h"
 #include "Mydb.h"
 #include "Dns.h"
+#include "Threadpool.h"
 #include <string.h>
+#include <pthread.h>
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 using namespace std;
+void *myprocess (void *arg)
+{
+	printf("hahahahaha,threadid is 0x%x, working on task %d\n", (unsigned int)pthread_self (),*(int *) arg);
+	sleep (1);/*休息一秒，延长任务的执行时间*/
+	return NULL;
+}
 int main()
 {
 	Queue Wqueue(1024,512);
@@ -34,7 +42,7 @@ int main()
 	//db.ExecuteSql("select * from dns");
 	//char abc[256] = "ping -c 1 119.75.218.70";
 	CHAR ip[256] = {0};
-	Getipbyhost(url[1], ip);
+	//Getipbyhost(url[1], ip);
 	char abc[256] = {0};
 	sprintf(abc,"ping -c 1 %s",ip);
 	printf("%s\n",abc);
@@ -46,5 +54,15 @@ int main()
 	}
 	else
 		printf("ip wrong!\n");
+	Manager manager(3);
+	manager.Init();
+	int aaaa[6] = {1,2,3,4,5};
+	manager.AddWorker(myprocess,&aaaa[0]);
+	manager.AddWorker(myprocess,&aaaa[1]);
+	manager.AddWorker(myprocess,&aaaa[2]);
+	manager.AddWorker(myprocess,&aaaa[3]);
+	manager.AddWorker(myprocess,&aaaa[4]);
+	//manager.Destroy();
+	manager.Join();
 	return 0;
 }

@@ -35,7 +35,13 @@ class Manager
 
 		INT Busynum;
 
-		CTask *Head;	
+		BOOL Shutdown;
+
+		CTask *Head;
+
+		INT Tasknum;
+
+		friend VOID *thread_routine(VOID *arg);
 	
 	public:
 	
@@ -49,7 +55,10 @@ class Manager
 
 		INT Destroy();
 
+		VOID Join();
 };
 
+VOID *thread_routine(VOID *arg);
 
 #endif
+
