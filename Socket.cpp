@@ -39,7 +39,7 @@ BOOL UdpClient::CreateSocket(CHAR *ip, WORD port)
 
 	Sock_addr.sin_family = AF_INET;    
 	
-	if(!strcpy(ip,"0.0.0.0"))
+	if(!strcmp(ip,"0.0.0.0"))
 		Sock_addr.sin_addr.s_addr = htons(INADDR_ANY);
 	else
 		Sock_addr.sin_addr.s_addr = inet_addr(ip);

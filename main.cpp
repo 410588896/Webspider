@@ -42,7 +42,7 @@ int main()
 	//db.ExecuteSql("select * from dns");
 	//char abc[256] = "ping -c 1 119.75.218.70";
 	CHAR ip[256] = {0};
-	//Getipbyhost(url[1], ip);
+	Getipbyhost(url[1], ip);
 	char abc[256] = {0};
 	sprintf(abc,"ping -c 1 %s",ip);
 	printf("%s\n",abc);

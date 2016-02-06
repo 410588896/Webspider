@@ -102,7 +102,7 @@ VOID Getipbydns(CHAR *host, CHAR *ip, INT num)
 
 	*(p + 1) = ident>>8;	
 
-	dhead.flag = htons(0x0800);
+	dhead.flag = htons(0x0100);
 
 	dhead.que_num = htons(0x0001);
 
@@ -126,7 +126,7 @@ VOID Getipbydns(CHAR *host, CHAR *ip, INT num)
 
 	*(p_tmp + 1) = tmp;
 
-	udpsocket.Send((const CHAR*)buffer, (UINT)(MAXLEN - 1));
+	udpsocket.Send((const CHAR*)buffer, (UINT)(sizeof(struct dnshead) + 2 * sizeof(WORD) + hostlen));
 
 	udpsocket.Recv(rebuffer, (UINT)(MAXLEN - 1));
 
