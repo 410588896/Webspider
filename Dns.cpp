@@ -131,8 +131,8 @@ VOID Getipbydns(CHAR *host, CHAR *ip, INT num)
 	udpsocket.Recv(rebuffer, (UINT)(MAXLEN - 1));
 
 	redns = (struct dnshead *)rebuffer;
-
-	if((redns->flag)&(0x000F))
+	
+	if((ntohs(redns->flag))&(0x000F))
 	{	
 		strcpy(ip, "0.0.0.0");
 		std::cout<<"Host doesn't exists!"<<std::endl;
@@ -140,10 +140,35 @@ VOID Getipbydns(CHAR *host, CHAR *ip, INT num)
 	}
 	else
 	{
-		INT *ip_tmp = (INT *)(rebuffer + sizeof(struct dnshead));
-		in_addr ipaddr;
-		ipaddr. s_addr = ntohl(*ip_tmp);
-		strcpy(ip, inet_ntoa(ipaddr));
+		struct otherhead *oth = (struct otherhead *)(rebuffer + sizeof(struct dnshead));
+		if((ntohs(oth->answ) == 0)&&(ntohs(oth->auth) == 0)&&(ntohs(oth->addi) == 0))
+		{
+			strcpy(ip,"0.0.0.0");
+			std::cout<<"Host doesn't exists!"<<std::endl;
+			return;
+		}
+		struct ans_head *anshead = (struct ans_head*)(rebuffer + sizeof(struct dnshead) + hostlen + 4);
+		INT len = 0;
+		while(ntohs(anshead->type) != 0)
+		{
+			if(ntohs(anshead->type) == 1)
+			{
+				INT *ip_tmp = (INT *)(anshead + 1);
+				in_addr ipaddr;
+				ipaddr. s_addr = *ip_tmp;//no need to change net address to host address because the ip is stored reserved in the dns tree.
+				strcpy(ip, inet_ntoa(ipaddr));
+				return;
+			}
+			else
+			{
+				len = ntohs(anshead->len);
+				CHAR *tmp = (CHAR *)(anshead + 1);
+				tmp = tmp + len;
+				anshead = (struct ans_head *)tmp;
+			}
+		}
+		strcpy(ip,"0.0.0.0");
+                std::cout<<"Host doesn't exists!"<<std::endl;
 		return;
 	}
 

@@ -15,6 +15,24 @@ struct dnshead
 	WORD add_count;
 };
 
+struct otherhead
+{
+	WORD ques;
+	WORD answ;
+	WORD auth;
+	WORD addi;	
+};
+
+struct ans_head
+{
+	WORD name;
+	WORD type;
+	WORD clas;
+	WORD ttl1;
+	WORD ttl2;
+	WORD len;
+};
+	
 INT ns_to_tran_ns(CHAR *des, CHAR *source);
 VOID Getipbyhost(CHAR *host, CHAR *ip);
 VOID Getipbydns(CHAR *host, CHAR *ip, INT num);
