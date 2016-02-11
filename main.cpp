@@ -64,6 +64,7 @@ int main()
 	match.Machine_construct();
 	CHAR str[128] = "asdsdwww.baidu.comksl";
 	UINT flag = match.Machine_find(str, 22);
+	match.Machine_destroy();
 	printf("###############find %d\n", flag);
 	Manager manager(3);
 	manager.Init();

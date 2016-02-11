@@ -267,7 +267,36 @@ UINT Automachine::Machine_find(CHAR *Str, UINT Len)
 ******************************/
 VOID Automachine::Machine_destroy()
 {
+	MQueue queue;
 
+	Model *Current;
+	
+	Model *tmp = root;
+
+	Node *Ntmp = tmp->Next;
+
+	Node *Dtmp;
+	
+	while(Ntmp)		
+	{
+		queue.Push(Ntmp->Nmodel);
+		Ntmp = Ntmp->Next;
+	}
+
+	while(Current = queue.Pop())
+	{
+		//in queue
+		Ntmp = Current->Next;
+		while(Ntmp)
+		{
+			queue.Push(Ntmp->Nmodel);
+			Dtmp = Ntmp;
+			Ntmp = Ntmp->Next;
+			free(Dtmp);			
+		}
+		free(Current);	
+	}
+	
 }
 
 /******************************
