@@ -2,6 +2,7 @@
 #include "Mydb.h"
 #include "Dns.h"
 #include "Threadpool.h"
+#include "Match.h"
 #include <string.h>
 #include <pthread.h>
 #include <iostream>
@@ -22,6 +23,7 @@ int main()
 		"www.sina.com.cn",\
 		"www.qq.com"\
 	};
+	CHAR hahaha[64] = "aaa";
 	UINT len = 0;
 	CHAR buf[1024] = {0};
 	Wqueue.Enqueue(url[0], strlen(url[0]));
@@ -54,6 +56,15 @@ int main()
 	}
 	else
 		printf("ip wrong!\n");
+	Automachine match;
+	match.Machine_prepare(1, url[0], 13);
+	match.Machine_prepare(2, url[1], 15);
+	match.Machine_prepare(3, url[2], 10);
+	match.Machine_prepare(4, hahaha, 3);
+	match.Machine_construct();
+	CHAR str[128] = "asdsdwww.baidu.comksl";
+	UINT flag = match.Machine_find(str, 22);
+	printf("###############find %d\n", flag);
 	Manager manager(3);
 	manager.Init();
 	int aaaa[6] = {1,2,3,4,5};
