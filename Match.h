@@ -71,5 +71,7 @@ class Automachine
 		VOID Machine_destroy();
 };
 
+VOID Httpreadconf(Automachine &match);
+
 #endif
 

@@ -1,5 +1,9 @@
 #include "Match.h"
 
+#include <fstream>
+#include <iostream>
+#include <string.h>
+
 #define NO_CASE_SENSITIVE
 
 /*
@@ -367,5 +371,51 @@ Model* MQueue::Pop()
 		tmp = NULL;
 		return re;	
 	}
+}
+
+/******************************
+ * Name		:Httpreadconf
+ * Function :HTTP read conf
+ * Args		:
+ * Return	:
+ * PS		:
+******************************/
+VOID Httpreadconf(Automachine &match)
+{
+	CHAR buffer[256] = {0};  
+
+	CHAR gjz[256] = {0};
+	
+	UINT flag = 0;
+		
+	std::ifstream in("httpresponse.conf");  
+	
+	if(!in.is_open())  
+	{ 
+		std::cout<<"read conf error"<<std::endl; 
+		
+		exit (1); 
+	}  
+
+	in.getline (buffer,128);
+	
+	while(!in.eof())  
+	{  
+		if(buffer[0] == '#')
+			continue;	
+		
+		flag = buffer[0] - '0';
+
+		strcpy(gjz, buffer + 2);
+		
+		match.Machine_prepare(flag, gjz, strlen(gjz));
+
+		memset(buffer, 0, 256);
+
+		memset(gjz, 0, 256);
+
+		in.getline (buffer,128);
+	}
+	match.Machine_construct();
 }
 
