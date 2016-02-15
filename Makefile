@@ -5,8 +5,9 @@ LIBS	= -L/usr/lib/mysql -lmysqlclient -lpthread
 FOO := $(wildcard ./*.cpp)
 BAR := $(basename $(FOO))
 OBJ := $(addsuffix .o,$(BAR))
+INC := $(wildcard ./*.h)
 
-.cpp.o:
+.cpp.o:$(INC)
 	$(CC) -c $(CFLAGS) $(LIBS) $<
 
 Webspider:$(OBJ)

@@ -124,7 +124,9 @@ BOOL Queue::Dequeue(CHAR *Url, UINT &Len)
 	}		
 	else
 	{
+#ifdef DEBUG
 		std::cout<<"The queue is empty!"<<std::endl;
+#endif
 		return false;
 	}
 }

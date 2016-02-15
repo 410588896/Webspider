@@ -5,6 +5,7 @@
 #include <string.h>
 
 #define NO_CASE_SENSITIVE
+#define DEBUG
 
 /*
 **This version supports no-case sensitive 
@@ -407,7 +408,9 @@ VOID Httpreadconf(Automachine &match)
 		flag = buffer[0] - '0';
 
 		strcpy(gjz, buffer + 2);
-		
+#ifdef DEBUG
+		std::cout<<"Machine construct GJZ:"<<gjz<<std::endl;
+#endif	
 		match.Machine_prepare(flag, gjz, strlen(gjz));
 
 		memset(buffer, 0, 256);

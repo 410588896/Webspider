@@ -6,8 +6,10 @@
 
 int main(){
 
-char *bematch = "http://www.gmail.com/aaa.html";
-char *pattern = "^(http|https|ftp)\\://([a-zA-Z0-9\\.\\-]+(\\:[a-zA-Z0-9\\.&amp;%\\$\\-]+)*@)*((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|localhost|([a-zA-Z0-9\\-]+\\.)*[a-zA-Z0-9\\-]+\\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(\\:[0-9]+)*(/($|[a-zA-Z0-9\\.\\,\\?\\'\\\\\\+&amp;%\\$#\\=~_\\-]+))*$";
+char *bematch = "<td><a href=\"http://camel.hrbeu.edu.cn/infopub/1-3.htm\" target=\"_blank\">宣传部、</a><a href=\"http://www.gongxue.cn/tongzhanbu/index.asp\" target=\"_blank\">统战部</a></td>";
+//char *pattern = "(http|https|ftp)\\://([a-zA-Z0-9\\.\\-]+(\\:[a-zA-Z0-9\\.&amp;%\\$\\-]+)*@)*((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|localhost|([a-zA-Z0-9\\-]+\\.)*[a-zA-Z0-9\\-]+\\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(\\:[0-9]+)*(/($|[a-zA-Z0-9\\.\\,\\?\\'\\\\\\+&amp;%\\$#\\=~_\\-]+))*";
+//char *pattern = "(http://|https://)?([^/]*)";
+char *pattern = "<(a|form|frame|iframe|layer|input|link|select|hr|bgsound|embed|fig|ilayer|note|overlay|ul|base|area|link|body|table|tr|th|td|head|meta|param|blockquote|del|ins|q|codebase|code|object|archive|sermap|codebase|classid|data)[^>]*(href|action|src|Longdesc|action|urn|cite|applet|object)=\"(https://|/|http://)([^/>'\"]*/?[^>'\"]*)\"?[^>]*>";
 char errbuf[1024];
 char match[100];
 regex_t reg;

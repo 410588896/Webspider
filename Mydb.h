@@ -4,6 +4,8 @@
 #include <mysql/mysql.h>
 
 #include "Type.h"
+#include "Queue.h"
+#include "Bloomfilter.h"
 
 class Mydb
 {
@@ -18,6 +20,8 @@ class Mydb
 		BOOL Getip(CHAR *host, CHAR *ip);
 
 		BOOL Getnum(CHAR *host, INT &num);
+	
+		BOOL Urlenqueue(Queue &Urlqueue, BloomFilter &Bf);
 
 		~Mydb();
 	private:

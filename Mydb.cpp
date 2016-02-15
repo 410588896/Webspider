@@ -282,6 +282,62 @@ BOOL Mydb::Getip(CHAR *sql, CHAR *ip)
 }
 
 /******************************
+ * Name		:Urlenqueue
+ * Function :get url with mysql
+ * Args		:
+ * Return	:
+ * PS		:
+******************************/
+BOOL Mydb::Urlenqueue(Queue &Urlqueue, BloomFilter &Bf)
+{
+	CHAR sql[1024] = "select url from url";
+	if(mysql_query(connection, "set names utf8"))
+	{
+        fprintf(stderr, "%d: %s\n",mysql_errno(connection), mysql_error(connection));
+    }
+
+	INT t = mysql_query(connection, sql);
+	
+	if(t)
+	{
+		std::cout<<"Error making query:"<<mysql_error(connection)<<std::endl;;
+		
+		exit(1);
+	}
+	else
+	{	
+		//初始化逐行的结果集检索
+		res = mysql_use_result(connection);
+		
+		if(res)
+		{
+			//mysql_field_count(connection)   返回作用在连接上的最近查询的列数
+			for(INT i = 0 ;i < mysql_field_count(connection); i++)
+			{	
+				//检索一个结果集合的下一行
+				while(row = mysql_fetch_row(res))
+				{
+					if(row <= 0)
+					{
+						break;
+					}
+					//mysql_num_fields(res)  函数返回结果集中字段的数
+					for(INT r = 0; r < mysql_num_fields(res); r++)
+					{
+						Urlqueue.Enqueue(row[r], strlen(row[r]));
+						Bf.setBit(row[r], strlen(row[r]));
+						std::cout<<"Enqueue:"<<row[r]<<std::endl;		
+					}
+				}
+			}
+		}
+		//释放结果集使用的内存
+		mysql_free_result(res);
+	}
+	return true;
+}
+
+/******************************
  * Name		:Getnum
  * Function :get host num with mysql
  * Args		:host num
