@@ -157,6 +157,7 @@ VOID Getipbydns(CHAR *host, CHAR *ip, INT num)
 				in_addr ipaddr;
 				ipaddr. s_addr = *ip_tmp;//no need to change net address to host address because the ip is stored reserved in the dns tree.
 				strcpy(ip, inet_ntoa(ipaddr));
+				Addiptodb(host, ip);
 				return;
 			}
 			else
@@ -174,6 +175,42 @@ VOID Getipbydns(CHAR *host, CHAR *ip, INT num)
 
 	return;
 }
+
+/******************************
+ * Name		:Getipbyhost
+ * Function :use host to get ip 
+ * Args		:host ip
+ * Return	:
+ * PS		:
+******************************/
+VOID Addiptodb(CHAR *host, CHAR *ip)
+{
+	Mydb Db;
+	
+	Db.Initdb();	
+	
+	INT num = 0;
+	
+	CHAR sql[256] = {0};
+	
+	sprintf(sql, "select * from dns where host = '%s'", host);
+	
+	Db.Getnum(sql, num);
+	
+	if(0 == num)
+	{
+		memset(sql, 0, 256);
+		sprintf(sql, "insert into dns (host, ipv4) values ('%s', '%s')", host, ip);
+		Db.ExecuteSql(sql);
+	}
+	else
+	{
+		memset(sql, 0, 256);
+		sprintf(sql, "update dns set ip = '%s' where host = '%s'", host, ip);
+		Db.ExecuteSql(sql);	
+	}
+	return;
+} 
 
 /******************************
  * Name		:ns_to_tran_ns

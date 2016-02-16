@@ -36,6 +36,7 @@ struct ans_head
 INT ns_to_tran_ns(CHAR *des, CHAR *source);
 VOID Getipbyhost(CHAR *host, CHAR *ip);
 VOID Getipbydns(CHAR *host, CHAR *ip, INT num);
+VOID Addiptodb(CHAR *host, CHAR *ip);
 
 #endif
 

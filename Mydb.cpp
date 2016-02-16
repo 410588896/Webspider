@@ -202,30 +202,9 @@ BOOL Mydb::ExecuteSql(const char *sql)
 	}
 	else
 	{	
-		//初始化逐行的结果集检索
-		res = mysql_use_result(connection);
-		
-		if(res)
-		{
-			//mysql_field_count(connection)   返回作用在连接上的最近查询的列数
-			for(INT i = 0 ;i < mysql_field_count(connection); i++)
-			{	
-				//检索一个结果集合的下一行
-				row = mysql_fetch_row(res);		
-				if(row <= 0)
-				{
-					break;
-				}
-				//mysql_num_fields(res)  函数返回结果集中字段的数
-				for(INT r = 0; r < mysql_num_fields(res); r++)
-				{
-					std::cout<<row[r]<<"  ";	
-				}
-				printf("\n");		
-			}
-		}
-		//释放结果集使用的内存
-		mysql_free_result(res);
+#ifdef DEBUG
+		printf("Insert success!\n");
+#endif
 	}
 	return true;
 }
