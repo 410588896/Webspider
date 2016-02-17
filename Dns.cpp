@@ -18,6 +18,10 @@ const WORD DNS_PORT  = 53;
 ******************************/
 VOID Getipbyhost(CHAR *host, CHAR *ip)
 {
+	Mydb mydb;
+	
+	mydb.Initdb();	
+
 	CHAR sql[256] = {0};
 	
 	CHAR ip_tmp[256] = {0};
@@ -28,10 +32,6 @@ VOID Getipbyhost(CHAR *host, CHAR *ip)
 
 	INT ret = 0;
 	
-	Mydb mydb;
-	
-	mydb.Initdb();
-
 	sprintf(sql,"select count(*) from dns where host = '%s'", host);
 
 	mydb.Getnum(sql,num);
@@ -56,12 +56,12 @@ VOID Getipbyhost(CHAR *host, CHAR *ip)
 		}
 		else
 		{
-			Getipbydns(host, ip, num);
+			Getipbydns(host, ip, num, mydb);
 		}
 	}
 	else
 	{
-			Getipbydns(host, ip, num);
+			Getipbydns(host, ip, num, mydb);
 	}
 	
 	return;
@@ -74,7 +74,7 @@ VOID Getipbyhost(CHAR *host, CHAR *ip)
  * Return	:
  * PS		:
 ******************************/
-VOID Getipbydns(CHAR *host, CHAR *ip, INT num)
+VOID Getipbydns(CHAR *host, CHAR *ip, INT num, Mydb &Db)
 {
 	CHAR buffer[MAXLEN] = {0};
 
@@ -157,7 +157,7 @@ VOID Getipbydns(CHAR *host, CHAR *ip, INT num)
 				in_addr ipaddr;
 				ipaddr. s_addr = *ip_tmp;//no need to change net address to host address because the ip is stored reserved in the dns tree.
 				strcpy(ip, inet_ntoa(ipaddr));
-				Addiptodb(host, ip);
+				Addiptodb(host, ip, Db);
 				return;
 			}
 			else
@@ -183,17 +183,13 @@ VOID Getipbydns(CHAR *host, CHAR *ip, INT num)
  * Return	:
  * PS		:
 ******************************/
-VOID Addiptodb(CHAR *host, CHAR *ip)
+VOID Addiptodb(CHAR *host, CHAR *ip, Mydb &Db)
 {
-	Mydb Db;
-	
-	Db.Initdb();	
-	
 	INT num = 0;
 	
 	CHAR sql[256] = {0};
 	
-	sprintf(sql, "select * from dns where host = '%s'", host);
+	sprintf(sql, "select count(*) from dns where host = '%s'", host);
 	
 	Db.Getnum(sql, num);
 	
@@ -206,7 +202,7 @@ VOID Addiptodb(CHAR *host, CHAR *ip)
 	else
 	{
 		memset(sql, 0, 256);
-		sprintf(sql, "update dns set ip = '%s' where host = '%s'", host, ip);
+		sprintf(sql, "update dns set ipv4 = '%s' where host = '%s'", host, ip);
 		Db.ExecuteSql(sql);	
 	}
 	return;

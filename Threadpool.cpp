@@ -82,6 +82,9 @@ INT Manager::AddWorker(VOID *(*process)(VOID *arg), VOID *arg)
 {
 	CTask *newtask = (CTask *)malloc(sizeof(CTask));
 
+	if(newtask == NULL)
+		exit(0);
+
 	newtask->process = process;
 
 	newtask->arg = arg;

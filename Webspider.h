@@ -9,8 +9,8 @@
 #include "Queue.h"
 #include "Threadpool.h"
 #include "Bloomfilter.h"
+#include "Regex.h"
 
-#include <regex.h>
 #include <errno.h>
 
 #define USERAGENT "Wget/1.10.2"  
@@ -23,7 +23,7 @@
 
 #define MAXSIZE 400000000
 #define MAXREQ 1024
-#define URLLEN 128
+#define URLLEN 1024
 #define IPLEN 64
 #define PORT 80
 
@@ -32,9 +32,10 @@
 struct Webspider
 {
 	Automachine *match;
-	Mydb *Db;
 	BloomFilter *Bf;
 	Queue *Urlqueue;
+	Queue *Visitedqueue;
+	Regex *regex;
 	CHAR url[URLLEN];
 	UINT urllen;		
 };
@@ -43,7 +44,7 @@ void *myprogress(void *arg);
 
 UINT Requestsend(INT sockfd, CHAR *url, UINT urllen);
 
-UINT Responserecv(INT sockfd);
+UINT Responserecv(INT sockfd, Automachine *match, BloomFilter *Bf, Queue *Urlqueue, Regex *regex);
 
 #endif
 

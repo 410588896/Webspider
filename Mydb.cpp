@@ -137,6 +137,7 @@ Mydb::~Mydb()
 	if(connection != NULL)
 	{
 		mysql_close(connection);
+		connection = NULL;
 	}
 }
 
@@ -189,16 +190,16 @@ BOOL Mydb::ExecuteSql(const char *sql)
 {
 	if(mysql_query(connection, "set names utf8"))
 	{
-        fprintf(stderr, "%d: %s\n",mysql_errno(connection), mysql_error(connection));
-    }
+        	fprintf(stderr, "%d: %s\n",mysql_errno(connection), mysql_error(connection));
+    	}
 
 	INT t = mysql_query(connection, sql);
 	
 	if(t)
 	{
-		std::cout<<"Error making query:"<<mysql_error(connection)<<std::endl;;
-		
-		exit(1);
+		std::cout<<"Execute sql Error making query:"<<mysql_error(connection)<<std::endl;
+//		this.Initdb();	
+exit(1);
 	}
 	else
 	{	
@@ -220,14 +221,14 @@ BOOL Mydb::Getip(CHAR *sql, CHAR *ip)
 {
 	if(mysql_query(connection, "set names utf8"))
 	{
-        fprintf(stderr, "%d: %s\n",mysql_errno(connection), mysql_error(connection));
-    }
+        	fprintf(stderr, "%d: %s\n",mysql_errno(connection), mysql_error(connection));
+  	}
 
 	INT t = mysql_query(connection, sql);
 	
 	if(t)
 	{
-		std::cout<<"Error making query:"<<mysql_error(connection)<<std::endl;;
+		std::cout<<"Get ip Error making query:"<<mysql_error(connection)<<std::endl;
 		
 		exit(1);
 	}
@@ -272,14 +273,14 @@ BOOL Mydb::Urlenqueue(Queue &Urlqueue, BloomFilter &Bf)
 	CHAR sql[1024] = "select url from url";
 	if(mysql_query(connection, "set names utf8"))
 	{
-        fprintf(stderr, "%d: %s\n",mysql_errno(connection), mysql_error(connection));
-    }
+ 	       fprintf(stderr, "%d: %s\n",mysql_errno(connection), mysql_error(connection));
+    	}	
 
 	INT t = mysql_query(connection, sql);
 	
 	if(t)
 	{
-		std::cout<<"Error making query:"<<mysql_error(connection)<<std::endl;;
+		std::cout<<"Url enqueue Error making query:"<<mysql_error(connection)<<std::endl;
 		
 		exit(1);
 	}
@@ -327,14 +328,14 @@ BOOL Mydb::Getnum(CHAR *sql, INT &num)
 {
 	if(mysql_query(connection, "set names utf8"))
 	{
-        fprintf(stderr, "%d: %s\n",mysql_errno(connection), mysql_error(connection));
-    }
+ 	       fprintf(stderr, "%d: %s\n",mysql_errno(connection), mysql_error(connection));
+    	}
 
 	INT t = mysql_query(connection, sql);
 	
 	if(t)
 	{
-		std::cout<<"Error making query:"<<mysql_error(connection)<<std::endl;;
+		std::cout<<"Get num Error making query:"<<mysql_error(connection)<<std::endl;
 		
 		exit(1);
 	}

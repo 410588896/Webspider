@@ -7,13 +7,20 @@ BAR := $(basename $(FOO))
 OBJ := $(addsuffix .o,$(BAR))
 INC := $(wildcard ./*.h)
 
-.cpp.o:$(INC)
+.cpp.o: 
 	$(CC) -c $(CFLAGS) $(LIBS) $<
 
 Webspider:$(OBJ)
 	@echo "Compiling......"
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 	@echo "Done......"
+
+sinclude $(FOO:.cpp=.d)
+%d:%cpp
+	@echo "Create depend"
+	$(CC) -MM $(CFLAGS) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ ,g' < $@.$$$$ > $@; \
+	$(RM) $@.$$$$
 
 release:Webspider
 	strip Webspider
