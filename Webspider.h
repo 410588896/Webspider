@@ -40,7 +40,9 @@ struct Webspider
 	UINT urllen;		
 };
 
-void *myprogress(void *arg);
+VOID *myprogress(VOID *arg);
+
+VOID *Visitedurlhandle(VOID *arg);
 
 UINT Requestsend(INT sockfd, CHAR *url, UINT urllen);
 

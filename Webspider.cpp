@@ -1,5 +1,29 @@
 #include "Webspider.h"
 
+VOID *Visitedurlhandle(VOID *arg)
+{
+	Queue **Visitedqueue = (Queue **)arg;
+	CHAR sql[256] = {0};
+	CHAR url[URLLEN] = {0};
+	UINT urllen = 0;
+	Mydb Db;
+	Db.Initdb();
+	for(INT i = 0; i < 16; i++,i = i % 16)	
+	{
+		memset(url, 0, URLLEN);
+		if(Visitedqueue[i]->Dequeue(url, urllen))
+		{
+			if(strchr(url, '\'')||strchr(url, '\"'))
+			{
+				continue;
+			}
+			memset(sql, 0, 256);
+			sprintf(sql, "insert into visitedurl(url) values ('%s')", url);
+			Db.ExecuteSql(sql);
+		}
+	}	
+}
+
 VOID *myprogress(VOID *arg)
 {
 	//init the variable	
@@ -55,9 +79,7 @@ VOID *myprogress(VOID *arg)
 #endif
 
 	//insert the visitedurl
-//	CHAR sql[1024] = {0};
-//	sprintf(sql, "insert into visitedurl(url) values ('%s')", url);
-//	Db->ExecuteSql(sql);
+	Visitedqueue->Enqueue(url, urllen);	
 
 	//construct the request
 	INT sockfd;

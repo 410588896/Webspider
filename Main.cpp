@@ -54,6 +54,15 @@ INT main(INT args, CHAR *argv[])
 #endif
 /*****************************************************/
 
+//handle the visited queue
+	pthread_t tid;
+	INT ret = pthread_create(&tid, NULL, Visitedurlhandle, (VOID *)Visitedqueue);
+	if(ret != 0)
+	{
+		printf("pthread create error!\n");
+		return -1;
+	}
+
 //Begin to request use threadpool  
 //can epoll used here? Let's see later
 	CHAR url[URLLEN] = {0};
@@ -93,6 +102,7 @@ INT main(INT args, CHAR *argv[])
 
 /***********************destroy************************/
 	manager.Join();
+	pthread_join(tid, NULL);
 	match.Machine_destroy();
 	for(INT i = 0; i < 16; i++)
 	{

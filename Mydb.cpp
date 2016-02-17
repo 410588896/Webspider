@@ -198,8 +198,8 @@ BOOL Mydb::ExecuteSql(const char *sql)
 	if(t)
 	{
 		std::cout<<"Execute sql Error making query:"<<mysql_error(connection)<<std::endl;
-//		this.Initdb();	
-exit(1);
+		
+		exit(1);
 	}
 	else
 	{	

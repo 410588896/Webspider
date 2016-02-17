@@ -27,7 +27,7 @@ release:Webspider
 
 clean:
 	@echo "Cleaning......"
-	rm -f *.o;rm -f Webspider;rm -f *~
+	rm -f *.o;rm -f *.d;rm -f Webspider;rm -f *~
 	@echo "Done......"
 
 
