@@ -1,5 +1,6 @@
 CC 	= g++
-CFLAGS	= -g
+THREADNUM	= 16
+CFLAGS	= -g -DTHREAD_NUM=$(THREADNUM)
 LIBS	= -L/usr/lib/mysql -lmysqlclient -lpthread
 
 FOO := $(wildcard ./*.cpp)

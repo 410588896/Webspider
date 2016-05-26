@@ -21,7 +21,7 @@ class Mydb
 
 		BOOL Getnum(CHAR *host, INT &num);
 	
-		BOOL Urlenqueue(Queue &Urlqueue, BloomFilter &Bf);
+		BOOL Urlenqueue(Queue **Urlqueue, BloomFilter &Bf);
 
 		~Mydb();
 	private:

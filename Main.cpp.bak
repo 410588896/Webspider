@@ -26,15 +26,15 @@ INT main(INT args, CHAR *argv[])
 #endif
 
 //The queue
-	Queue *Urlqueue[THREAD_NUM];
-	Queue *Visitedqueue[THREAD_NUM];
-	for(INT i = 0; i < THREAD_NUM; i++)
+	Queue *Urlqueue[16];
+	Queue *Visitedqueue[16];
+	for(INT i = 0; i < 16; i++)
 	{
 		Urlqueue[i] = new Queue(1024, 512);
 		Visitedqueue[i] = new Queue(1024, 512);
 	}
 
-	Db.Urlenqueue(Urlqueue, Bf);
+	Db.Urlenqueue(*Urlqueue[0], Bf);
 #ifdef DEBUG
 	printf("################URL Queue init done\n");
 #endif
@@ -47,7 +47,7 @@ INT main(INT args, CHAR *argv[])
 #endif
 	
 //The thread pool
-	Manager manager(THREAD_NUM);
+	Manager manager(16);
 	manager.Init();
 #ifdef DEBUG
 	printf("################Thread Pool init done\n");
@@ -65,28 +65,46 @@ INT main(INT args, CHAR *argv[])
 
 //Begin to request use threadpool  
 //can epoll used here? Let's see later
-	pthread_t pid[THREAD_NUM];
-	for(INT i = 0; i < THREAD_NUM; i++)
+	CHAR url[URLLEN] = {0};
+	UINT urllen = 0;
+	while(true)
 	{
-		struct Webspider *webspider = (struct Webspider *)malloc(sizeof(struct Webspider));
-		memset(webspider, 0, sizeof(struct Webspider));
-		webspider->match = &match;
-		webspider->Bf = &Bf;
-		webspider->Urlqueue = Urlqueue[i];
-		webspider->Visitedqueue = Visitedqueue[i];
-		webspider->regex = &regex;
-		manager.AddWorker(myprogress, webspider);
-		//if(pthread_create(&pid[i], NULL, myprogress, (VOID*)webspider))
-			//printf("Thread %d create fail!\n", i);
+		for(INT i = 0; i < 16; i++,i = i % 16)
+		{
+			memset(url, 0, URLLEN);
+			if(Urlqueue[i]->Dequeue(url, urllen))
+			{
+				struct Webspider *webspider = (struct Webspider *)malloc(sizeof(struct Webspider));
+				memset(webspider, 0, sizeof(struct Webspider));
+				webspider->match = &match;
+				webspider->Bf = &Bf;
+				webspider->Urlqueue = Urlqueue[i];
+				webspider->Visitedqueue = Visitedqueue[i];
+				webspider->regex = &regex;
+				if(strstr(url, "http://"))
+				{
+					strcpy(webspider->url, url + 7);
+					webspider->urllen = urllen - 7;
+					manager.AddWorker(myprogress, webspider);
+				}	
+				else
+				{
+					strcpy(webspider->url, url + 8);
+					webspider->urllen = urllen - 8;
+					continue;
+					//sslsocket handle
+				}
+			}	
+			else
+				continue;
+		}
 	}
 
 /***********************destroy************************/
 	manager.Join();
 	pthread_join(tid, NULL);
 	match.Machine_destroy();
-	//for(INT i = 0; i < THREAD_NUM; i++)
-		//pthread_join(pid[i], NULL);
-	for(INT i = 0; i < THREAD_NUM; i++)
+	for(INT i = 0; i < 16; i++)
 	{
 		delete Urlqueue[i];
 		delete Visitedqueue[i];

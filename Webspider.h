@@ -36,8 +36,6 @@ struct Webspider
 	Queue *Urlqueue;
 	Queue *Visitedqueue;
 	Regex *regex;
-	CHAR url[URLLEN];
-	UINT urllen;		
 };
 
 VOID *myprogress(VOID *arg);

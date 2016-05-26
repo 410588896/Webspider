@@ -268,7 +268,7 @@ BOOL Mydb::Getip(CHAR *sql, CHAR *ip)
  * Return	:
  * PS		:
 ******************************/
-BOOL Mydb::Urlenqueue(Queue &Urlqueue, BloomFilter &Bf)
+BOOL Mydb::Urlenqueue(Queue **Urlqueue, BloomFilter &Bf)
 {
 	CHAR sql[1024] = "select url from url";
 	if(mysql_query(connection, "set names utf8"))
@@ -302,9 +302,9 @@ BOOL Mydb::Urlenqueue(Queue &Urlqueue, BloomFilter &Bf)
 						break;
 					}
 					//mysql_num_fields(res)  函数返回结果集中字段的数
-					for(INT r = 0; r < mysql_num_fields(res); r++)
+					for(INT r = 0, i = 0; r < mysql_num_fields(res); r++, i = (++i) % THREAD_NUM)
 					{
-						Urlqueue.Enqueue(row[r], strlen(row[r]));
+						Urlqueue[i]->Enqueue(row[r], strlen(row[r]));
 						Bf.setBit(row[r], strlen(row[r]));
 						std::cout<<"Enqueue:"<<row[r]<<std::endl;		
 					}
