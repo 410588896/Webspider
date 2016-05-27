@@ -24,6 +24,33 @@ VOID *Visitedurlhandle(VOID *arg)
 	}	
 }
 
+VOID http_socket(CHAR *ip, CHAR *url, INT urllen, Automachine *match, BloomFilter *Bf, Queue *Urlqueue, Regex *regex)
+{
+	INT sockfd;
+	struct sockaddr_in servaddr;		
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (-1 == sockfd) 
+	{
+		perror("socket error.");
+		Urlqueue->Enqueue(url, urllen);
+		close(sockfd);
+		return;
+	}
+	bzero(&servaddr, sizeof(servaddr));
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_port = htons(PORT);
+	inet_pton(AF_INET, ip, &servaddr.sin_addr);
+	if(-1 == connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr))) 
+	{
+		//if connect error,drop the url
+		perror("connect error.");
+		close(sockfd);
+		return;
+	}
+	Requestsend(sockfd, url, urllen);
+	Responserecv(sockfd, match, Bf, Urlqueue, regex);	
+}
+
 VOID *myprogress(VOID *arg)
 {
 	//init the variable	
@@ -45,6 +72,7 @@ VOID *myprogress(VOID *arg)
 	Urlqueue = webspider->Urlqueue;
 	Visitedqueue = webspider->Visitedqueue;
 	free(webspider);
+	INT flag = 1;
 
 	while(Urlqueue->Dequeue(originurl, originurllen))
 	{
@@ -52,18 +80,20 @@ VOID *myprogress(VOID *arg)
 		{
 			url = originurl + 7;
 			urllen = originurllen - 7;
+			flag = 1;
 		}	
 		else if(strstr(originurl, "https://"))
 		{
 			url = originurl + 8;
 			urllen = originurllen - 8;
-			continue;
+			flag = 2;
 			//sslsocket handle
 		}
 		else //no http:// or https:// we think it's http://
 		{
 			url = originurl;
 			urllen = originurllen;
+			flag = 1;
 		}
 
 		//local dns to gain ip
@@ -102,29 +132,12 @@ VOID *myprogress(VOID *arg)
 		Visitedqueue->Enqueue(originurl, originurllen);	
 
 		//construct the request
-		INT sockfd;
-		struct sockaddr_in servaddr;		
-		sockfd = socket(AF_INET, SOCK_STREAM, 0);
-		if (-1 == sockfd) 
-		{
-			perror("socket error.");
-			Urlqueue->Enqueue(url, urllen);
-			close(sockfd);
+		if(flag == 1)
+			http_socket(ip, url, urllen, match, Bf, Urlqueue, regex);
+		else if(2 == flag)
+			https_socket(ip, url, urllen, match, Bf, Urlqueue, regex);
+		else
 			continue;
-		}
-		bzero(&servaddr, sizeof(servaddr));
-		servaddr.sin_family = AF_INET;
-		servaddr.sin_port = htons(PORT);
-		inet_pton(AF_INET, ip, &servaddr.sin_addr);
-		if(-1 == connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr))) 
-		{
-			//if connect error,drop the url
-			perror("connect error.");
-			close(sockfd);
-			continue;
-		}
-		Requestsend(sockfd, url, urllen);
-		Responserecv(sockfd, match, Bf, Urlqueue, regex);	
 		memset(ip, 0, IPLEN);
 		memset(iptest, 0, IPLEN);
 		memset(originurl, 0, URLLEN);
@@ -140,7 +153,7 @@ UINT Requestsend(INT sockfd, CHAR *url, UINT urllen)
 	if(dir = strchr(url,'/'))
 	{
 		memcpy(host, url, dir - url);
-		sprintf(request, "GET %s HTTP/1.0\r\nHost: %s\r\nUser-Agent: %s\r\nAccept: %s\r\nConnection: %s\r\n\r\n", dir + 1, host, USERAGENT, ACCEPT, CONNECTION);		
+		sprintf(request, "GET /%s HTTP/1.0\r\nHost: %s\r\nUser-Agent: %s\r\nAccept: %s\r\nConnection: %s\r\n\r\n", dir + 1, host, USERAGENT, ACCEPT, CONNECTION);		
 	}
 	else
 	{
@@ -223,10 +236,10 @@ UINT Responserecv(INT sockfd, Automachine *match, BloomFilter *Bf, Queue *Urlque
 #ifdef DEBUG 
 					printf("New URL:%s:%d\n", match, matchlen);
 #endif
-					if(!Bf->checkBit(match + 6, matchlen - 6))
+					if(!Bf->checkBit(match + 6, matchlen - 7))
 					{
-						Bf->setBit(match + 6, matchlen - 6);
-						Urlqueue->Enqueue(match + 6, matchlen - 6);
+						Bf->setBit(match + 6, matchlen - 7);
+						Urlqueue->Enqueue(match + 6, matchlen - 7);
 					}
 					len += offset;
 				}
@@ -253,10 +266,10 @@ UINT Responserecv(INT sockfd, Automachine *match, BloomFilter *Bf, Queue *Urlque
 #ifdef DEBUG 
 						printf("New URL:%s:%d\n", match, matchlen);
 #endif
-						if(!Bf->checkBit(match + 6, matchlen - 6))
+						if(!Bf->checkBit(match + 6, matchlen - 7))
 						{
-							Bf->setBit(match + 6, matchlen - 6);
-							Urlqueue->Enqueue(match + 6, matchlen - 6);
+							Bf->setBit(match + 6, matchlen - 7);
+							Urlqueue->Enqueue(match + 6, matchlen - 7);
 						}
 						len += offset;
 					}

@@ -10,6 +10,7 @@
 #include "Threadpool.h"
 #include "Bloomfilter.h"
 #include "Regex.h"
+#include "Ssl.h"
 
 #include <errno.h>
 
@@ -45,6 +46,8 @@ VOID *Visitedurlhandle(VOID *arg);
 UINT Requestsend(INT sockfd, CHAR *url, UINT urllen);
 
 UINT Responserecv(INT sockfd, Automachine *match, BloomFilter *Bf, Queue *Urlqueue, Regex *regex);
+
+VOID http_socket(CHAR *ip, CHAR *url, INT urllen, Automachine *match, BloomFilter *Bf, Queue *Urlqueue, Regex *regex);
 
 #endif
 
