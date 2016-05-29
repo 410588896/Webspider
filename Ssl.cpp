@@ -118,6 +118,7 @@ UINT SSL_Responserecv(SSL *ssl, INT sockfd, Automachine *match, BloomFilter *Bf,
 {
 	CHAR response[MAXREQ] = {0};
 	INT n = SSL_read(ssl, response, MAXREQ - 1);
+
 	//respond head handle
 	if(n <= 0)
 	{
