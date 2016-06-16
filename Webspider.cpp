@@ -174,31 +174,10 @@ UINT Responserecv(INT sockfd, Automachine *match, BloomFilter *Bf, Queue *Urlque
 	struct timeval timeout={3,0};//3s
 	INT ret=setsockopt(sockfd,SOL_SOCKET,SO_RCVTIMEO,(const CHAR*)&timeout,sizeof(timeout));
 	INT n = recv(sockfd, response, MAXREQ - 1, 0);
-	if(strstr(response, "Transfer-Encoding: chunked"))
-	{
-		//解码chunk
-#ifdef DEBUG
-		printf("###################chunk depress!\n");
-#endif
-		return 0;
-	}
-	else if(strstr(response, "Content-Encoding: gzip"))
-	{
-		//解压gzip
-#ifdef DEBUG
-		printf("###################No chunk ,gzip depress!\n");
-#endif
-		return 0;
-	}
-	else if(strstr(response, "Content-Encoding: deflate"))
-	{
-		//解压deflate
-#ifdef DEBUG
-		printf("###################No chunk ,deflate depress!\n");
-#endif
-		return 0;
-	}
-
+	
+	CHAR responsehead[1024] = {0};	
+	CHAR *rn = strstr(response, "\r\n\r\n");	
+	memcpy(responsehead, rn + 4, n - (rn + 4 - response));
 	//respond head handle
 	if(n <= 0)
 	{
@@ -240,6 +219,32 @@ UINT Responserecv(INT sockfd, Automachine *match, BloomFilter *Bf, Queue *Urlque
 		close(sockfd);
 		return 0;
 	}
+
+	if(strstr(response, "TRANSFER-ENCODING: CHUNKED"))
+	{
+		//解码chunk
+#ifdef DEBUG
+		printf("###################chunked depress!\n");
+#endif
+		return 0;
+	}
+	else if(strstr(response, "CONTENT-ENCODING: GZIP"))
+	{
+		//解压gzip
+#ifdef DEBUG
+		printf("###################No chunked ,gzip depress!\n");
+#endif
+		return 0;
+	}
+	else if(strstr(response, "CONTENT-ENCODING: DEFLATE"))
+	{
+		//解压deflate
+#ifdef DEBUG
+		printf("###################No chunked ,deflate depress!\n");
+#endif
+		return 0;
+	}
+
 	while(1)
 	{
 		if(n > 0)
