@@ -119,6 +119,31 @@ UINT SSL_Responserecv(SSL *ssl, INT sockfd, Automachine *match, BloomFilter *Bf,
 	CHAR response[MAXREQ] = {0};
 	INT n = SSL_read(ssl, response, MAXREQ - 1);
 
+	if(strstr(response, "Transfer-Encoding: chunked"))
+	{
+		//解码chunk
+#ifdef DEBUG
+		printf("###################chunk depress!\n");
+#endif
+		return 0;
+	}
+	else if(strstr(response, "Content-Encoding: gzip"))
+	{
+		//解压gzip
+#ifdef DEBUG
+		printf("###################No chunk ,gzip depress!\n");
+#endif
+		return 0;
+	}
+	else if(strstr(response, "Content-Encoding: deflate"))
+	{
+		//解压deflate
+#ifdef DEBUG
+		printf("###################No chunk ,deflate depress!\n");
+#endif
+		return 0;
+	}
+
 	//respond head handle
 	if(n <= 0)
 	{

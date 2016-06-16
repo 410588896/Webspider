@@ -1,7 +1,7 @@
 CC 	= g++
 THREADNUM	= 16
 CFLAGS	= -g -DTHREAD_NUM=$(THREADNUM)
-LIBS	= -L/usr/lib/mysql -lmysqlclient -lpthread -lssl -lcrypto
+LIBS	= -L/usr/lib/mysql -lmysqlclient -lpthread -lz -lssl -lcrypto
 
 FOO := $(wildcard ./*.cpp)
 BAR := $(basename $(FOO))
