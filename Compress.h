@@ -14,7 +14,7 @@ INT gzdecompress(BYTE *zdata, LONG nzdata, BYTE *data, LONG *ndata);
 
 INT deflatedecompress(BYTE *zdata, LONG nzdata, BYTE *data, LONG *ndata);
 
-VOID DeChunk(BYTE *pChunkData, INT nChunkDataSize, BYTE *pNewData);
+INT DeChunk(BYTE *pChunkData, INT nChunkDataSize, BYTE *pNewData);
 
 #endif
 

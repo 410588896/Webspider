@@ -11,6 +11,7 @@
 #include "Bloomfilter.h"
 #include "Regex.h"
 #include "Ssl.h"
+#include "Depress.h"
 
 #include <errno.h>
 

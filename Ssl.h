@@ -14,6 +14,7 @@
 #include "Bloomfilter.h"
 #include "Regex.h"
 #include "Ssl.h"
+#include "Depress.h"
 
 VOID ShowCerts(SSL *ssl);
 

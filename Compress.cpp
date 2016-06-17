@@ -107,8 +107,9 @@ INT deflatedecompress(BYTE *zdata, LONG nzdata, BYTE *data, LONG *ndata)
 	return 0;
 } 
 
-VOID DeChunk(BYTE *pChunkData, INT nChunkDataSize, BYTE *pNewData)		//组包
+INT DeChunk(BYTE *pChunkData, INT nChunkDataSize, BYTE *pNewData)		//组包
 {
+	INT alllen = 0;
 	CHAR *pStart = (CHAR *)pChunkData;		//chunked data
 	CHAR *pTemp;			
 	INT chunkedINTLength;				//chunked 数据包的大小 - 十进制
@@ -119,12 +120,13 @@ VOID DeChunk(BYTE *pChunkData, INT nChunkDataSize, BYTE *pNewData)		//组包
 		memset(chunkedStrLength, 0, sizeof(chunkedStrLength));
 		pTemp = strstr(pStart, "\r\n");
 		INT chunkedByteLength = pTemp - pStart;	//chunked 大小 存放的字节长度
+		alllen += chunkedByteLength;
 		for (INT i = 0; i < chunkedByteLength; i++)
 			chunkedStrLength[i] = pStart[i];
 		pStart = pTemp + 2;									//指针移位，跳过\r\n
 		sscanf(chunkedStrLength, "%x", &chunkedINTLength);
 		if (0 == chunkedINTLength)
-			return;
+			return alllen;
 		else
 		{
 			memcpy(pNewData, pStart, chunkedINTLength);

@@ -128,19 +128,19 @@ UINT SSL_Responserecv(SSL *ssl, INT sockfd, Automachine *match, BloomFilter *Bf,
 	{
 		return 0;
 	}
-	UINT flag = match->Machine_find(response, n);
-	switch(flag)
+	UINT matchid = match->Machine_find(response, n);
+	switch(matchid)
 	{
 		case 1:
 		case 2:
 #ifdef DEBUG
-			printf("#######%u->URL Normal!\n", flag);
+			printf("#######%u->URL Normal!\n", matchid);
 #endif
 			break;
 		case 3:
 		case 4:
 #ifdef DEBUG
-			printf("#######%u->URL Wait!\n", flag);
+			printf("#######%u->URL Wait!\n", matchid);
 #endif
 			sleep(10);
 			break;
@@ -151,7 +151,7 @@ UINT SSL_Responserecv(SSL *ssl, INT sockfd, Automachine *match, BloomFilter *Bf,
 //get url
 //url enqueue
 #ifdef DEBUG
-			printf("#######%u->URL Redirect!\n", flag);
+			printf("#######%u->URL Redirect!\n", matchid);
 #endif
 			return 0;
 		default:
@@ -162,28 +162,48 @@ UINT SSL_Responserecv(SSL *ssl, INT sockfd, Automachine *match, BloomFilter *Bf,
 		return 0;
 	}
 
+	INT flag = 0;
+/*******************************************************
+ * 0 no chunked no gzip no deflate
+ * 1 chunked no gzip, no deflate
+ * 2 no chunked gzip
+ * 3 chunked gzip
+ * 4 no chunked deflate
+ * 5 chunked deflate
+*******************************************************/
 	if(strstr(response, "TRANSFER-ENCODING: CHUNKED"))
 	{
 		//解码chunk
+		flag = 1;
 #ifdef DEBUG
 		printf("###################chunked depress!\n");
 #endif
-		return 0;
 	}
 	else if(strstr(response, "CONTENT-ENCODING: GZIP"))
 	{
 		//解压gzip
+		if(flag == 0)
+			flag = 2;
+		else
+			flag = 3;
 #ifdef DEBUG
 		printf("###################No chunked ,gzip depress!\n");
 #endif
-		return 0;
 	}
 	else if(strstr(response, "CONTENT-ENCODING: DEFLATE"))
 	{
 		//解压deflate
+		if(flag == 0)
+			flag = 4;
+		else 
+			flag = 5;
 #ifdef DEBUG
 		printf("###################No chunked ,deflate depress!\n");
 #endif
+	}
+	if(flag != 0)
+	{
+		DeChunk(sockfd, Bf, Urlqueue, regex, responsehead, (n - (rn + 4 - response)), flag);
 		return 0;
 	}
 
