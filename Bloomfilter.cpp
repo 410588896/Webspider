@@ -89,5 +89,5 @@ VOID BloomFilter::setBit(UINT count)
 BOOL BloomFilter::checkBit(UINT count)
 {
 	count = count % (SIZE * 8);
-	return vec[count / 8] &= (1 << (count % 8));
+	return vec[count / 8] & (1 << (count % 8));
 }
